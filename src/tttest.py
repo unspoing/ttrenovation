@@ -370,7 +370,9 @@ def main():
 
         timeicon = pygame.transform.scale(time, (20, 20))
         skipicon = pygame.transform.scale(skip, (40, 20))
+
         space.debug_draw(DrawOptions(screen))
+        
         screen.blit(timeicon, (0, 30))
         screen.blit(skipicon, (0, 50))
 
