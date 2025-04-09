@@ -235,67 +235,19 @@ def main():
         
         for event in pygame.event.get():
             mpos = pygame.mouse.get_pos()
-
-
-            ### INPUTS ###
             if event.type == pygame.QUIT:  # exit
                 running = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:  # exit
                 running = False
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:  # spawning/dropping block
-                # if no block is currently in control:
-                if placed and not win:
-                    block = functions.create_block((196, 50))  # create block
-                    blockhandler.begin = block.collide  # start collision handler for block
-                    # add to screen and space
-                    if len(block.shape) == 1:
-                        BLOCKS_ON_SCREEN.append(block)
-                        space.add(block.body, block.shape[0])
-                    else:
-                        BLOCKS_ON_SCREEN.append(block)
-                        space.add(block.body, block.shape[0], block.shape[1])
-                    placed = False
-                    continue
-                # if block is currently in control:
-                if not placed:
-                    functions.drop_block(block, space)
-                    placed = True
-                    bd +=1
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:  # move right
-                if not placed:
-                    pos = block.get_position()
-                    block.set_position((pos[0] + 7.5, pos[1]))
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:  # move down
-                if not placed:
-                    block.set_velocity((0, 100))
-                    down = True
-            elif event.type == pygame.KEYUP and event.key == pygame.K_DOWN:  # stop moving down
-                if not placed:
-                    block.set_velocity((0, 0))
-                    down = False
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:  # move left
-                if not placed:
-                    pos = block.get_position()
-                    block.set_position((pos[0] - 7.5, pos[1]))
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_q:  # rotate
-                if not placed:
-                    angle = block.get_angle()
-                    block.set_angle(angle + 1.5708)
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_e:  # rotate
-                if not placed:
-                    angle = block.get_angle()
-                    block.set_angle(angle - 1.5708)
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_p:  # pause/play music
-                if music:
-                    pygame.mixer.music.pause()
-                    music = False
-                else:
-                    pygame.mixer.music.unpause()
-                    music = True
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     click = True
 
+            # handle spawning/despawning
+            block, placed, bd = functions.handle_spawning(event, block, placed, win, space, BLOCKS_ON_SCREEN, bd, blockhandler)
+
+            # handle movement
+            down = functions.handle_movement(event, block, placed, down)
 
         ### CHECK FOR WINS, COLLISIONS, AND SHIFT CURRENT BLOCK DOWN ###
         if not win:

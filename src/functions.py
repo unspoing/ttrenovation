@@ -1,5 +1,6 @@
 import random
 import math
+import pygame
 
 from blocks import Block
 
@@ -74,3 +75,49 @@ def starttimer(arbiter, space, data):
 def stoptimer(arbiter, space, data):
     global touch
     touch = False
+
+
+def handle_movement(event, block, placed, down):
+    if not placed:
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:  # move right
+            pos = block.get_position()
+            block.set_position((pos[0] + 7.5, pos[1]))
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:  # move down
+            block.set_velocity((0, 100))
+            down = True
+        elif event.type == pygame.KEYUP and event.key == pygame.K_DOWN:  # stop moving down
+            block.set_velocity((0, 0))
+            down = False
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:  # move left
+            pos = block.get_position()
+            block.set_position((pos[0] - 7.5, pos[1]))
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_q:  # rotate
+            angle = block.get_angle()
+            block.set_angle(angle + 1.5708)
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_e:  # rotate
+            angle = block.get_angle()
+            block.set_angle(angle - 1.5708)
+    return down
+
+
+def handle_spawning(event, block, placed, win, space, BLOCKS_ON_SCREEN, bd, blockhandler):
+    """Handles spawning and despawning of blocks."""
+    if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+        # If no block is currently in control:
+        if placed and not win:
+            block = create_block((196, 50))  # create block
+            blockhandler.begin = block.collide  # start collision handler for block
+            # Add to screen and space
+            if len(block.shape) == 1:
+                BLOCKS_ON_SCREEN.append(block)
+                space.add(block.body, block.shape[0])
+            else:
+                BLOCKS_ON_SCREEN.append(block)
+                space.add(block.body, block.shape[0], block.shape[1])
+            placed = False
+        # If block is currently in control:
+        elif not placed:
+            drop_block(block, space)
+            placed = True
+            bd += 1
+    return block, placed, bd
