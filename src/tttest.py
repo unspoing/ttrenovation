@@ -6,7 +6,7 @@ import pygame
 import pymunk
 import functions
 
-from pymunk import Vec2d
+from pymunk.pygame_util import DrawOptions
 
 pygame.init()
 
@@ -116,7 +116,6 @@ def main():
     timer = 0
     wintick = 0
     win = False
-    music = True
 
     bd = 0
     bl = 0
@@ -279,8 +278,6 @@ def main():
             bd = bd + 1
 
 
-
-
         fps = 60.0
         dt = 1.0 / fps
         space.step(dt)
@@ -310,37 +307,7 @@ def main():
         )
         ### PRINT SPRITES ###
         for block in BLOCKS_ON_SCREEN:
-            if (
-                block.name == "lblock"
-                or block.name == "jblock"
-                or block.name == "tblock"
-            ):
-                pos = block.get_position()
-                pos = Vec2d((pos.x), (pos.y))
-                angle_degrees = math.degrees(-(block.get_angle()))
-                rotated_block = pygame.transform.rotate(
-                    blockImages[block.name], angle_degrees
-                )
-                transoffset = Vec2d(*rotated_block.get_size()) / 2
-                angoffset = (
-                    (5.3033 * math.sin((functions.convtorad(angle_degrees)) + 0.785)),
-                    -(5.3033 * math.cos((functions.convtorad(angle_degrees)) + 0.785)),
-                )
-                pos = pos - transoffset + angoffset
-                screen.blit(rotated_block, (round(pos.x), round(pos.y)))
-            else:
-                pos = block.body.position
-                pos = Vec2d((pos.x), (pos.y))
-                angle_degrees = math.degrees(-(block.body.angle))
-                rotated_block = pygame.transform.rotate(
-                    blockImages[block.name], angle_degrees
-                )
-                offset = Vec2d(*rotated_block.get_size()) / 2
-                pos = pos - offset
-                screen.blit(rotated_block, (round(pos.x), round(pos.y)))
-
-
-
+            functions.draw_sprite(block, screen, blockImages)
 
 
         if touch:
@@ -403,14 +370,14 @@ def main():
 
         timeicon = pygame.transform.scale(time, (20, 20))
         skipicon = pygame.transform.scale(skip, (40, 20))
-
+        space.debug_draw(DrawOptions(screen))
         screen.blit(timeicon, (0, 30))
         screen.blit(skipicon, (0, 50))
 
         storeedit = open("imagesandsuch/storeinfo.txt", "w")
         for val in storelist:
             storeedit.write(val + "\n")
-
+        
         storeedit.close()
 
         pygame.display.flip()
