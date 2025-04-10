@@ -1,17 +1,19 @@
-w, h = 400, 600  # shenanigans
-collision_types = {
-    "block": 1,
-    "mblock": 2,
-    "bottom": 3,
-    "top": 4,
-}  # block for dynamic mblock for kinematic
-screen = pygame.display.set_mode((w, h))
-font = pygame.font.Font("imagesandsuch/pixelfont.ttf", 9)
-menufont = pygame.font.Font("imagesandsuch/pixelfont.ttf", 50)
-winfont = pygame.font.Font("imagesandsuch/pixelfont.ttf", 30)
-storefont = pygame.font.Font("imagesandsuch/pixelfont.ttf", 15)
-clock = pygame.time.Clock()
-pygame.display.set_caption("tricky towers knockoff")
-leaderboardscore = " "
 
-BLOCKS_ON_SCREEN = []
+import pygame
+
+class GUI:
+    def __init__(self, font, width = 400, height = 600, title = "tricky towers knockoff"):
+        pygame.init()
+        self.screen = pygame.display.set_mode((width, height))
+        self.font = pygame.font.Font(font, 9)
+        self.menufont = pygame.font.Font(font, 50)
+        self.winfont = pygame.font.Font(font, 30)
+        self.storefont = pygame.font.Font(font, 15)
+        self.clock = pygame.time.Clock()
+    def show_image(self,image, location):
+        self.screen.blit(image, location)
+
+    def make_button(self, size, location):
+        button = pygame.Rect(location)
+        pygame.draw.rect(self.screen, (255, 0, 0), button)
+    

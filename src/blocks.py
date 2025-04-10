@@ -167,6 +167,10 @@ class Block:
     def collide(self, arbiter, space, data):
         self.collision = True
         return True
+    
+    def void_block(self, arbiter, space, data):
+        self.lost = True
+        return True
 
 def main():
     """

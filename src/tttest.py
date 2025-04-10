@@ -6,6 +6,8 @@ import pygame
 import pymunk
 import functions
 
+from gui import GUI
+
 from pymunk.pygame_util import DrawOptions
 
 pygame.init()
@@ -17,14 +19,8 @@ collision_types = {
     "bottom": 3,
     "top": 4,
 }  # block for dynamic mblock for kinematic
-screen = pygame.display.set_mode((w, h))
-font = pygame.font.Font("imagesandsuch/pixelfont.ttf", 9)
-menufont = pygame.font.Font("imagesandsuch/pixelfont.ttf", 50)
-winfont = pygame.font.Font("imagesandsuch/pixelfont.ttf", 30)
-storefont = pygame.font.Font("imagesandsuch/pixelfont.ttf", 15)
-clock = pygame.time.Clock()
-pygame.display.set_caption("tricky towers knockoff")
-leaderboardscore = " "
+
+game = GUI("imagesandsuch/pixelfont.ttf")
 
 BLOCKS_ON_SCREEN = []
 
@@ -51,7 +47,7 @@ def setup(space):  # add ground into game
     space.add(ground, shape, shape2, groundraise, bottom, top)
 
 def menu():  # creates menu
-    screen.fill("black")
+    game.screen.fill("black")
 
     click = False
     background = pygame.image.load(
@@ -76,16 +72,16 @@ def menu():  # creates menu
         achievbutton = pygame.Rect(125, 405, 146, 50)
         storebutton = pygame.Rect(125, 460, 146, 50)
 
-        pygame.draw.rect(screen, (255, 0, 0), playbutton)
-        pygame.draw.rect(screen, (255, 0, 0), ldbbutton)
-        pygame.draw.rect(screen, (255, 0, 0), achievbutton)
-        pygame.draw.rect(screen, (255, 0, 0), storebutton)
+        pygame.draw.rect(game.screen, (255, 0, 0), playbutton)
+        pygame.draw.rect(game.screen, (255, 0, 0), ldbbutton)
+        pygame.draw.rect(game.screen, (255, 0, 0), achievbutton)
+        pygame.draw.rect(game.screen, (255, 0, 0), storebutton)
 
-        screen.blit(bg, (0, 0))
-        screen.blit(achievementimg, (125, 405))
-        screen.blit(playimg, (125, 295))
-        screen.blit(leaderboardimg, (125, 350))
-        screen.blit(storeimg, (125, 460))
+        game.screen.blit(bg, (0, 0))
+        game.screen.blit(achievementimg, (125, 405))
+        game.screen.blit(playimg, (125, 295))
+        game.screen.blit(leaderboardimg, (125, 350))
+        game.screen.blit(storeimg, (125, 460))
 
         if playbutton.collidepoint(pos):
             if click:
@@ -102,7 +98,7 @@ def menu():  # creates menu
                     click = True
 
         pygame.display.update()
-        clock.tick(60)
+        game.clock.tick(60)
 
 def main():
     ### SETUP ###
@@ -186,15 +182,6 @@ def main():
     blockhandler = space.add_collision_handler(
         collision_types["mblock"], collision_types["block"]
     )
-    voidhandler = space.add_collision_handler(
-        collision_types["bottom"], collision_types["block"]
-    )
-    voidhandler.begin = functions.blocklost  # detect when a block falls off
-
-    voidhandler2 = space.add_collision_handler(
-        collision_types["bottom"], collision_types["mblock"]
-    )
-    voidhandler2.begin = functions.blocklost  # detect when a non-placed block isnt placed (you gotta be trash to let that happen bruh)
 
     winhandler = space.add_collision_handler(
         collision_types["top"], collision_types["block"]
@@ -206,7 +193,7 @@ def main():
 
     # create first block
     block = functions.create_block((196, 50))
-    blockhandler.begin = block.collide  
+    blockhandler.begin = block.collide 
     if len(block.shape) == 1:
         BLOCKS_ON_SCREEN.append(block)
         space.add(block.body, block.shape[0])
@@ -226,18 +213,18 @@ def main():
             storelist.append(line[:-1])
         storeinfo.close()
 
-        timetext = font.render(storelist[1], storefont, (0, 0, 0))
-        losttext = font.render(storelist[2], storefont, [0, 0, 0])
+        timetext = game.font.render(storelist[1], game.storefont, (0, 0, 0))
+        losttext = game.font.render(storelist[2], game.storefont, [0, 0, 0])
 
-        screen.blit(losttext, (40, 57))
-        screen.blit(timetext, (25, 37))
+        game.screen.blit(losttext, (40, 57))
+        game.screen.blit(timetext, (25, 37))
         
         for event in pygame.event.get():
             mpos = pygame.mouse.get_pos()
             if event.type == pygame.QUIT:  # exit
                 running = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:  # exit
-                running = False
+                running = False 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     click = True
@@ -281,46 +268,64 @@ def main():
         fps = 60.0
         dt = 1.0 / fps
         space.step(dt)
-        clock.tick(fps)
+        game.clock.tick(fps)
         lost = str(math.trunc(bl))
-        timetext = font.render(storelist[1], storefont, (0, 0, 0))
-        losttext = font.render(storelist[2], storefont, [0, 0, 0])
+        timetext = game.font.render(storelist[1], game.storefont, (0, 0, 0))
+        losttext = game.font.render(storelist[2], game.storefont, [0, 0, 0])
 
-        screen.blit(bg, (0, 0))
-        screen.blit(finishline, (0, 126))
-        screen.blit(timetext, (25, 37))
-        screen.blit(losttext, (40, 57))
+        game.screen.blit(bg, (0, 0))
+        game.screen.blit(finishline, (0, 126))
+        game.screen.blit(timetext, (25, 37))
+        game.screen.blit(losttext, (40, 57))
         if windevent:
-            screen.blit(windimg, (0, 0))
+            game.screen.blit(windimg, (0, 0))
 
         functions.draw_text(
-            ("Blocks Dropped: " + str(bd)), font, (0, 0, 0), screen, 0, 0
+            ("Blocks Dropped: " + str(bd)), game.font, (0, 0, 0), game.screen, 0, 0
         )
-        functions.draw_text(("Blocks Lost: " + lost), font, (0, 0, 0), screen, 0, 18)
+        functions.draw_text(("Blocks Lost: " + lost), game.font, (0, 0, 0), game.screen, 0, 18)
         functions.draw_text(
             ("Time: " + functions.convtomin(int((timer / 60)))),
-            font,
+            game.font,
             (0, 0, 0),
-            screen,
+            game.screen,
             270,
             0,
         )
-        ### PRINT SPRITES ###
+
         for block in BLOCKS_ON_SCREEN:
-            functions.draw_sprite(block, screen, blockImages)
+            functions.draw_sprite(block, game.screen, blockImages)
+            #print(BLOCKS_ON_SCREEN)
 
 
         if touch:
             wintick = wintick + 1
 
             if (int(wintick / 60)) == 1:
-                functions.draw_text(("3"), menufont, (0, 0, 0), screen, 170, 300)
+                functions.draw_text(("3"), game.menufont, (0, 0, 0), game.screen, 170, 300)
             if (int(wintick / 60)) == 2:
-                functions.draw_text(("2"), menufont, (0, 0, 0), screen, 170, 300)
+                functions.draw_text(("2"), game.menufont, (0, 0, 0), game.screen, 170, 300)
             if (int(wintick / 60)) == 3:
-                functions.draw_text(("1"), menufont, (0, 0, 0), screen, 170, 300)
+                functions.draw_text(("1"), game.menufont, (0, 0, 0), game.screen, 170, 300)
             if (int(wintick / 60)) == 4:
                 win = True
+        for block in BLOCKS_ON_SCREEN:
+            height = block.get_position()[1]
+            if height > 700:
+                print(block.body.body_type)
+                if block.body.body_type == 1:
+                    print('MEOW')
+                    functions.handle_spawning(event, block, placed, win, space, BLOCKS_ON_SCREEN, bd, blockhandler)
+                    bd +=1
+                    placed = True
+                bl +=1
+                BLOCKS_ON_SCREEN.remove(block)
+                print(BLOCKS_ON_SCREEN)
+
+                if len(block.shape) == 1:
+                    space.remove(block.body, block.shape[0])
+                else:
+                    space.remove(block.body, block.shape[0], block.shape[1])
 
         if not touch:
             wintick = 0
@@ -328,28 +333,28 @@ def main():
             coingain = functions.calcmoragain(timer / 60, bl)
             # leaderboardscore = str('Score:'+ calcscore(timer/60,bl) + 'Time: '+ convtomin(int((timer/60))))
             escbutton = pygame.Rect(120, 265, 146, 50)
-            functions.draw_text(("you win!"), menufont, (0, 0, 0), screen, 10, 200)
+            functions.draw_text(("you win!"), game.menufont, (0, 0, 0), game.screen, 10, 200)
             functions.draw_text(
                 ("Time: " + functions.convtomin(int((timer / 60)))),
-                winfont,
+                game.winfont,
                 (0, 0, 0),
-                screen,
+                game.screen,
                 50,
                 320,
             )
             functions.draw_text(
                 ("Score: " + functions.calcscore(timer / 60, bl)),
-                winfont,
+                game.winfont,
                 (0, 0, 0),
-                screen,
+                game.screen,
                 50,
                 370,
             )
             functions.draw_text(
                 ("Coins gained: " + str(coingain)),
-                storefont,
+                game.storefont,
                 (255, 255, 0),
-                screen,
+                game.screen,
                 50,
                 420,
             )
@@ -357,7 +362,7 @@ def main():
                 storelist[0] = str(int(storelist[0]) + coingain)
                 gainedcoins = True
 
-            screen.blit(backbutton, (120, 265))
+            game.screen.blit(backbutton, (120, 265))
 
             if escbutton.collidepoint(mpos):  # detect click on play
                 if click:
@@ -371,10 +376,10 @@ def main():
         timeicon = pygame.transform.scale(time, (20, 20))
         skipicon = pygame.transform.scale(skip, (40, 20))
 
-        space.debug_draw(DrawOptions(screen))
+        space.debug_draw(DrawOptions(game.screen))
         
-        screen.blit(timeicon, (0, 30))
-        screen.blit(skipicon, (0, 50))
+        game.screen.blit(timeicon, (0, 30))
+        game.screen.blit(skipicon, (0, 50))
 
         storeedit = open("imagesandsuch/storeinfo.txt", "w")
         for val in storelist:
