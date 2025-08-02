@@ -1,4 +1,3 @@
-
 import random
 import sys
 import math
@@ -9,6 +8,7 @@ import functions
 
 from gui import GUI
 
+#use to show body shapes
 from pymunk.pygame_util import DrawOptions
 
 pygame.init()
@@ -21,31 +21,33 @@ collision_types = {
     "top": 4,
 }  # block for dynamic mblock for kinematic
 
+#create game instance
 game = GUI("imagesandsuch/pixelfont.ttf")
 
 BLOCKS_ON_SCREEN = []
 
 def setup(space):  # add ground into game
-    ground = pymunk.Body(0, 0, body_type=pymunk.Body.STATIC)
-    ground.position = (188), (420)
-    shape = pymunk.Poly.create_box(ground, (90, 5))
-    shape.collision_type = collision_types["block"]
-    shape.color = pygame.Color(0, 0, 0, 0)
-    shape.friction = 0.8
-    shape.elasticity = 0
-    groundraise = pymunk.Body(1, 1000, body_type=pymunk.Body.STATIC)
-    groundraise.position = 181, 411.5
-    shape2 = pymunk.Poly.create_box(groundraise, (15, 15))
-    shape2.collision_type = collision_types["block"]
+    platform = pymunk.Body(0, 0, body_type=pymunk.Body.STATIC)
+    platform.position = (188), (420)
+    ground = pymunk.Poly.create_box(platform, (90, 5))
+    ground.collision_type = collision_types["block"]
+    ground.friction = 0.8
+    ground.elasticity = 0
+    box = pymunk.Poly(platform, [(0,0), (-15,-15,), (0,-15), (-15,0)])
+    box.collision_type = collision_types["block"]
+    box.friction = 0.8
+    box.elasticity = 0
+
     bottom = pymunk.Segment(space.static_body, (-500, 800), (1000, 800), 2)
     bottom.sensor = True
     bottom.collision_type = collision_types["bottom"]
-    bottom.color = pygame.Color("red")
+
     top = pymunk.Segment(space.static_body, (-500, 150), (1000, 150), 2)
     top.sensor = True
     top.collision_type = collision_types["top"]
-    top.color = pygame.Color("red")
-    space.add(ground, shape, shape2, groundraise, bottom, top)
+
+    space.add(platform,ground,box, bottom, top)
+    space.debug_draw(DrawOptions(game.screen))
 
 def menu():  # creates menu
     game.screen.fill("black")
@@ -53,7 +55,7 @@ def menu():  # creates menu
     click = False
     background = pygame.image.load(
         "imagesandsuch/background.png"
-    )  # background shenanigans
+    )   #background shenanigans
     playimg = pygame.image.load("imagesandsuch/startbutton.png")  # start button image
     achievementimg = pygame.image.load(
         "imagesandsuch/achievementbutton.png"
@@ -138,7 +140,6 @@ def main():
     storeinfo.close()
 
     if storelist[4] == "0":
-        # pygame.mixer.music.load("imagesandsuch/un_sospiro.mp3")
         iblock = pygame.image.load("imagesandsuch/iblock.png")
         iblock.set_colorkey(0)
         lblock = pygame.image.load("imagesandsuch/lblock.png")
@@ -154,7 +155,6 @@ def main():
         tblock = pygame.image.load("imagesandsuch/tblock.png")
         tblock.set_colorkey(0)
     else:
-        # pygame.mixer.music.load("imagesandsuch/liebestraum.mp3")
         iblock = pygame.image.load("imagesandsuch/iblocksakura.png")
         iblock.set_colorkey(0)
         lblock = pygame.image.load("imagesandsuch/lblocksakura.png")
@@ -377,7 +377,7 @@ def main():
         timeicon = pygame.transform.scale(time, (20, 20))
         skipicon = pygame.transform.scale(skip, (40, 20))
 
-        space.debug_draw(DrawOptions(game.screen))
+        #space.debug_draw(DrawOptions(game.screen))
         
         game.screen.blit(timeicon, (0, 30))
         game.screen.blit(skipicon, (0, 50))
