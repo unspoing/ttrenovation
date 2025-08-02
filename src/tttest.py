@@ -8,8 +8,8 @@ import functions
 
 from gui import GUI
 
-#use to show body shapes
-from pymunk.pygame_util import DrawOptions
+#use to show body shapes if needed
+#from pymunk.pygame_util import DrawOptions
 
 pygame.init()
 
@@ -47,22 +47,17 @@ def setup(space):  # add ground into game
     top.collision_type = collision_types["top"]
 
     space.add(platform,ground,box, bottom, top)
-    space.debug_draw(DrawOptions(game.screen))
+    #space.debug_draw(DrawOptions(game.screen))
 
-def menu():  # creates menu
+def menu():  # creates main menu
     game.screen.fill("black")
 
     click = False
-    background = pygame.image.load(
-        "imagesandsuch/background.png"
-    )   #background shenanigans
-    playimg = pygame.image.load("imagesandsuch/startbutton.png")  # start button image
-    achievementimg = pygame.image.load(
-        "imagesandsuch/achievementbutton.png"
-    )  # yapyapyap
-    leaderboardimg = pygame.image.load(
-        "imagesandsuch/leaderboardbutton.png"
-    )  # yapyapyap
+
+    background = pygame.image.load("imagesandsuch/background.png")
+    playimg = pygame.image.load("imagesandsuch/startbutton.png")
+    achievementimg = pygame.image.load("imagesandsuch/achievementbutton.png")
+    leaderboardimg = pygame.image.load("imagesandsuch/leaderboardbutton.png")
     storeimg = pygame.image.load("imagesandsuch/storebutton.png")
 
     bg = pygame.transform.scale(background, (w, h))
@@ -70,32 +65,38 @@ def menu():  # creates menu
     while True:
         pos = pygame.mouse.get_pos()
 
+        # create button shapes
         playbutton = pygame.Rect(125, 295, 146, 50)
         ldbbutton = pygame.Rect(125, 350, 146, 50)
         achievbutton = pygame.Rect(125, 405, 146, 50)
         storebutton = pygame.Rect(125, 460, 146, 50)
 
+        # draw buttons
         pygame.draw.rect(game.screen, (255, 0, 0), playbutton)
         pygame.draw.rect(game.screen, (255, 0, 0), ldbbutton)
         pygame.draw.rect(game.screen, (255, 0, 0), achievbutton)
         pygame.draw.rect(game.screen, (255, 0, 0), storebutton)
 
+        #show button images
         game.screen.blit(bg, (0, 0))
         game.screen.blit(achievementimg, (125, 405))
         game.screen.blit(playimg, (125, 295))
         game.screen.blit(leaderboardimg, (125, 350))
         game.screen.blit(storeimg, (125, 460))
 
+        # if click on playbutton, run main function (game)
         if playbutton.collidepoint(pos):
             if click:
                 main()
 
         click = False
 
+        # check for quit and mouse clicks
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     click = True
