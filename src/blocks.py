@@ -33,6 +33,13 @@ BLOCK_SHAPES = {
 
 NORMAL_BLOCKS = ["iblock", "oblock"]  # blocks that only require 1 shape per body
 
+# spawn position tweaks from original block*k functions
+SPAWN_OFFSETS = {
+    "lblock": (-3.75, -3.75),
+    "jblock": (3.75, -3.75),
+    "tblock": (3.75, 3.75),
+}
+
 
 class Block:
     """
@@ -49,7 +56,8 @@ class Block:
         # create body and its position and rotation
         block_name = list(BLOCK_SHAPES.keys())[type]  # change type to block name
         body = pymunk.Body(1, 500, body_type=pymunk.Body.KINEMATIC)
-        body.position = position
+        offset = SPAWN_OFFSETS.get(block_name, (0, 0))
+        body.position = (position[0] + offset[0], position[1] + offset[1])
         body.angle = rotation * 1.5708
 
         self.type = type

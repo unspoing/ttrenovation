@@ -1,10 +1,10 @@
-
+# gui class
 import pygame
 
 class GUI:
-    def __init__(self, font, width = 400, height = 600, title = "tricky towers knockoff"):
-        pygame.init()
+    def __init__(self, font, width=400, height=600, title="tricky towers knockoff"):
         self.screen = pygame.display.set_mode((width, height))
+        pygame.display.set_caption(title)
         self.font = pygame.font.Font(font, 9)
         self.menufont = pygame.font.Font(font, 50)
         self.winfont = pygame.font.Font(font, 30)
